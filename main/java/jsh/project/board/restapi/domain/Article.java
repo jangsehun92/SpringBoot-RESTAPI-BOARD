@@ -1,23 +1,56 @@
 package jsh.project.board.restapi.domain;
 
-import java.util.Date;
+import java.sql.Date;
 
-public class Article{
-    private int id;
-    private String title;
-    private String content;
-    private Date date;
+public class Article {
+	private int id;
+	private String writer;
+	private String title;
+	private String content;
+	private Date regDate;
+	
+	public Article() {
+		
+	}
 
-    public Article(){
+	public int getId() {
+		return id;
+	}
 
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public String getWriter() {
+		return writer;
+	}
 
-    public Article(int id, String title, String content, Date date){
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-    }
+	public void setWriter(String writer) {
+		this.writer = writer;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
 
-    //getter&setter
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Date getRegDate() {
+		return regDate;
+	}
+
+	public void setRegDate(Date regDate) {
+		this.regDate = regDate;
+	}
+	
 }

@@ -8,17 +8,19 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Configuration
-@MapperScan(basePackages = "jsh.projct.board.restapi.dao")
-public class DatabaseConfig {
-   
+@MapperScan(basePackages = "jsh.projct.board.restapi.dao") // mapper interface 경로 지정
+public class MybatisConfig {
+
     @Bean
-    public SqlSessionFactory sqlSessionFactory (DataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-        
+
         sqlSessionFactory.setDataSource(dataSource);
-        sqlSessionFactory.setTypeAliasesPackage("jsh.project.board.restapi.dto");
+        sqlSessionFactory.setTypeAliasesPackage("jsh.project.board.restapi.domain"); //DTO가 위치해 있는 곳을 잡아준다.
+        sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("mapper/*.xml")); //실질적인 sql 쿼리가 있는 mapper.xml
         
         return sqlSessionFactory.getObject();
     }
