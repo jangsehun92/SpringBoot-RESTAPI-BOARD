@@ -1,4 +1,4 @@
-package jsh.proejct.board.restapi.api;
+package jsh.project.board.restapi.api;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,16 +8,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.qos.logback.classic.Logger;
+import jsh.project.board.restapi.service.BoardService;
 
 @RestController
 public class RestApi{
     private static final Logger logger = (Logger)LoggerFactory.getLogger(RestApi.class);
 
+    private BoardService boardServie;
+
+    public RestApi(BoardService boardService){
+        this.boardServie = boardService;
+    }
 
     @GetMapping("/test")
-    public ResponseEntity<String> test(){
+    public ResponseEntity<Integer> test(){
         logger.info("GET /test");
-        return new ResponseEntity<String>("test",HttpStatus.OK);
+        System.out.println(boardServie.totalCount());
+        return new ResponseEntity<Integer>(boardServie.totalCount(),HttpStatus.OK);
     }
 
     @GetMapping("/article/{id}")
@@ -30,7 +37,9 @@ public class RestApi{
     public ResponseEntity<String> list(){
         logger.info("GET /articles");
         return new ResponseEntity<>(HttpStatus.OK);
+        
     }
+
 
 
     
