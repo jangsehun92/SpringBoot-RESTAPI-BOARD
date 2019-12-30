@@ -39,5 +39,36 @@
 			id = #{id}
 	</select>
 
+--------
+	<insert id="insert" parameterType="ArticleCreateRequest">
+		INSERT INTO 
+			test_rest_board
+		VALUES(
+			test_board_seq.nextval,
+			#{writer},
+			#{password},
+			#{title},
+			#{content},
+			SYSDATE
+		)
+	</insert>
+	
+	<update id="update" parameterType="ArticleUpdateRequest">
+		UPDATE 
+			test_rest_board
+		SET
+			TITLE = #{title},
+			CONTENT = #{content}
+		WHERE
+			ID = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE
+		FROM
+			test_rest_board
+		WHERE
+			id = #{id}
+	</delete>
 	
 </mapper>
