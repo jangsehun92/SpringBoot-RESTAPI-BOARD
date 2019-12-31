@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import jsh.project.board.restapi.dao.BoardMapper;
 import jsh.project.board.restapi.domain.Article;
+import jsh.project.board.restapi.dto.ArticleCreateRequest;
+import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 
 @Service
 public class BoardService {
@@ -25,16 +27,14 @@ public class BoardService {
 	public Article detail(int id) {
 		return boardMapper.detail(id);
 	}
-	/*
 	public void articleCreate(ArticleCreateRequest dto) {
-		boardMapper.create();
+		boardMapper.insert(dto);
 	}
 	
 	public void articleUpdate(int id, ArticleUpdateRequest dto) {
 		dto.setId(id);
-		boardMapper.update();
+		boardMapper.update(dto);
 	}
-	*/
 	
 	public void articleDelete(int id) {
 		boardMapper.delete(id);

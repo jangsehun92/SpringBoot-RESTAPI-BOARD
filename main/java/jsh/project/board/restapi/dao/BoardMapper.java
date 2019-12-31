@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import jsh.project.board.restapi.domain.Article;
+import jsh.project.board.restapi.dto.ArticleCreateRequest;
+import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 
 @Mapper
 public interface BoardMapper {
@@ -14,6 +16,10 @@ public interface BoardMapper {
 	public List<Article> list();
 	
 	public Article detail(int id);
+
+	public int insert(ArticleCreateRequest dto);
+
+	public int update(ArticleUpdateRequest dto);
 
 	public void delete(int id);
 	
