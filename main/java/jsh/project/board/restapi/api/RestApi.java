@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,12 @@ public class RestApi{
     @PatchMapping("/article/{id}")
     public ResponseEntity<HttpStatus> articleUpdate(@PathVariable("id")int id,@RequestBody ArticleUpdateRequest dto){
         boardService.articleUpdate(id, dto);
+        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/article/{id}")
+    public ResponseEntity<HttpStatus> articleDelete(@PathVariable("id")int id){
+        boardService.articleDelete(id);
         return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }
     

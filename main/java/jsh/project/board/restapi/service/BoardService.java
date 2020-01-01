@@ -27,6 +27,7 @@ public class BoardService {
 	public Article detail(int id) {
 		return boardMapper.detail(id);
 	}
+	
 	public void articleCreate(ArticleCreateRequest dto) {
 		boardMapper.insert(dto);
 	}
