@@ -39,7 +39,7 @@
 			id = #{id}
 	</select>
 
---------
+
 	<insert id="insert" parameterType="ArticleCreateRequest">
 		INSERT INTO 
 			test_rest_board

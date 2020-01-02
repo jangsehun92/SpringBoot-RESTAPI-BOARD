@@ -19,7 +19,7 @@ public class MybatisConfig {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
 
         sqlSessionFactory.setDataSource(dataSource);
-        sqlSessionFactory.setTypeAliasesPackage("jsh.project.board.restapi.domain"); //DTO가 위치해 있는 곳을 잡아준다.
+        sqlSessionFactory.setTypeAliasesPackage("jsh.project.board.restapi.dto"); //DTO가 위치해 있는 곳을 잡아준다.
         sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("mapper/*.xml")); //실질적인 sql 쿼리가 있는 mapper.xml
         
         return sqlSessionFactory.getObject();

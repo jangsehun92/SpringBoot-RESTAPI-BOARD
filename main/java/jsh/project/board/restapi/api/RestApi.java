@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ch.qos.logback.classic.Logger;
-import jsh.project.board.restapi.domain.Article;
+import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 import jsh.project.board.restapi.service.BoardService;
@@ -49,9 +49,9 @@ public class RestApi{
         return new ResponseEntity<List<Article>>(boardService.list(), HttpStatus.OK);
     }
 
-    @PostMapping(value="/article")
+    @PostMapping("/articles")
     public ResponseEntity<HttpStatus> articleCreate(@RequestBody ArticleCreateRequest dto) {
-        logger.info("POST /article");
+        logger.info("POST /articles");
         boardService.articleCreate(dto);
         return new ResponseEntity<HttpStatus>(HttpStatus.CREATED);
     }

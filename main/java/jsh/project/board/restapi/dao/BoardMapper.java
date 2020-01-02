@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import jsh.project.board.restapi.domain.Article;
+import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 

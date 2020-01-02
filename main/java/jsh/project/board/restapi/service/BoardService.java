@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jsh.project.board.restapi.dao.BoardMapper;
-import jsh.project.board.restapi.domain.Article;
+import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 

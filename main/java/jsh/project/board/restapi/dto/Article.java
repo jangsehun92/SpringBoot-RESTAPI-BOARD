@@ -1,4 +1,4 @@
-package jsh.project.board.restapi.domain;
+package jsh.project.board.restapi.dto;
 
 import java.sql.Date;
 
