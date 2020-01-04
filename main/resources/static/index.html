@@ -1,18 +1,247 @@
 <!DOCTYPE html>
 <html>
-	<meta charset="UTF-8">
+<meta charset="UTF-8">
 <head>
 	<title>Index</title>
 </head>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+<script type="text/javascript">
+
+jQuery.fn.serializeObject = function() { 
+    var obj = null; 
+    try { 
+        if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) { 
+            var arr = this.serializeArray(); 
+            if(arr){ obj = {}; 
+            jQuery.each(arr, function() { 
+                obj[this.name] = this.value; }); 
+            } 
+        } 
+    }catch(e) { 
+        alert(e.message); 
+    }finally {} 
+    return obj; 
+}
+
+window.onload = function() {
+	$.ajax({
+		url:"/totalCount",
+		type:"get",
+		success:function(data){
+			$("#main").append("<span>전체 게시글 수 : "+data+" 개</span>");
+		},
+		error:function(request,status,error){
+			alert("전체게시글 수 가져오기 실패");
+		}
+	});
+};
+
+function total_count(){
+	$.ajax({
+		url:"/totalCount",
+		type:"get",
+		success:function(data){
+			$("#main").empty();
+			$("#main").append("<span>전체 게시글 수 : "+data+" 개</span>");
+		},
+		error:function(request,status,error){
+			alert("전체게시글 수 가져오기 실패");
+		}
+	});
+}
+
+function article_list(){
+	$.ajax({
+		url:"/articles",
+		type:"get",
+		dataType: "JSON",
+		success:function(data){
+			$("#main").empty();
+			$("#main").append(
+				"<table class='table table-hover' id='articleTable'>"+
+					"<thead>"+
+						"<tr>"+
+							"<td class='col-md-1'><b>번호</b></td>"+
+							"<td class='col-md-5'><b>제목</b></td>"+
+							"<td class='col-md-2' align='right'><b>작성자</b></td>"+
+							"<td class='col-md-2' align='right'><b>작성날짜</b></td>"+
+						"</tr>"+
+					"</thead>");
+			$.each(data, function(index, value) {
+				$("#articleTable").append(
+					"<tr>"+
+						"<td>"+value.id+"</td>"+
+						"<td><a href='article/"+value.id+"' onclick='return article_detail("+value.id+")'>"+value.title+"</a>"+
+						"<td align='right'>"+value.writer+"</td>"+
+						"<td align='right'>"+value.regDate+"</td>"+
+					"</tr>"+
+				"</table>");
+			});
+		},
+		error:function(request,status,error){
+			alert("전체 게시글 불러오기 실패");
+		}
+	});
+}
+function resize(obj){
+	obj.style.height = "1px";
+	obj.style.height = (12+obj.scrollHeight)+"px";
+}
+
+
+function article_detail(id){
+	$.ajax({
+		url:"/article/"+id,
+		type:"get",
+		dataType: "JSON",
+		success:function(data){
+			$("#main").empty();
+			$("#main").append(
+				"<form name = 'articleCreateForm' id = 'articleCreateForm'>"+
+					"<table class='table'>"+
+						"<tr>"+
+							"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><input id='password' name='password' type='password' class='form-control' placeholder='비밀번호' maxlength='64'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'></textarea>"+
+						"</tr>"+
+					"</table>"+
+				"</form>"+
+				"<input type='button' class='btn btn-primary' value='완료' onclick='return check_form();''>"
+			);
+		},
+		error:function(request,status,error){
+			alert("단일 게시글 불러오기 실패");
+		}
+	});
+	return false;
+}
+
+function article_create(){
+	$("#main").empty();
+	$("#main").append(
+		"<form name = 'articleCreateForm' id = 'articleCreateForm'>"+
+			"<table class='table'>"+
+				"<tr>"+
+					"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12'></td>"+
+				"</tr>"+
+				"<tr>"+
+					"<td><input id='password' name='password' type='password' class='form-control' placeholder='비밀번호' maxlength='64'></td>"+
+				"</tr>"+
+				"<tr>"+
+					"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50'></td>"+
+				"</tr>"+
+				"<tr>"+
+					"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'></textarea>"+
+				"</tr>"+
+			"</table>"+
+		"</form>"+
+		"<input type='button' class='btn btn-primary' value='완료' onclick='return create_check_form();''>"
+	);
+
+}
+
+function create_check_form(){
+	//replace 로 공백 제거
+	var inputForm_title = $("#title").val().replace(/\s|/gi,'');
+	var inputForm_writer = $("#writer").val().replace(/\s|/gi,'');
+	var inputForm_password = $("#password").val().replace(/\s|/gi,'');
+	var inputForm_content = $("#content").val().replace(/\s|/gi,'');
+	
+	if(inputForm_title==""){
+		alert("제목을 입력해주세요.");
+		$("#title").val("");
+		$("#title").focus();
+		return false;
+	}
+	
+	if(inputForm_password==""){
+		alert("비밀번호를 입력해주세요.");
+		$("#password").val("");
+		$("#password").focus();
+		return false;
+	}
+	
+	if(inputForm_writer==""){
+		alert("작성자를 입력해주세요.");
+		$("#writer").val("");
+		$("#writer").focus();
+		return false;
+	}
+	
+	if(inputForm_content==""){
+		alert("내용을 입력해주세요.");
+		$("#content").val("");
+		$("#content").focus();
+		return false;
+	}
+	
+	var articleCreateRequest = $("form[name=articleCreateForm]").serializeObject();
+	
+	$.ajax({
+		url:"/articles",
+		type:"post",
+		contentType : "application/json; charset=UTF-8",
+		dataType : "text",
+		data: JSON.stringify(articleCreateRequest),
+		success:function(data){
+			alert("글생성 성공!");
+		},
+		error:function(request,status,error){
+			alert(request);
+			alert(status);
+			alert(error);
+			alert("글쓰기 실패");
+		}
+	});
+}
+
+function article_update(){
+
+}
+
+function article_delete(){
+
+}
+
+</script>
+
 <body>
-	<h1>TEST PAGE</h1>
-	<!--
-		1. totalCount 호출
-		2. ArticleList 호출
-		3. ArticleDetail 호출
-		4. CREATE, UPDATE 호출
-		5. DELETE 호출
-	-->
+	
+
+	<div class="container" >
+		<div>
+			<h1>TEST PAGE</h1>
+			<!--
+				1. totalCount 호출
+				2. ArticleList 호출
+				3. ArticleDetail 호출
+				4. CREATE, UPDATE 호출
+				5. DELETE 호출
+			-->
+			<button class="btn btn-primary" onclick="total_count();">전체 게시글 수</button>
+			<button class="btn btn-primary" onclick="article_list();">전체 게시글 가져오기</button>
+			<button class="btn btn-primary" onclick="article_create();">글 작성하기</button>
+			<button class="btn btn-primary" onclick="article_update();">글 수정하기</button>
+			<button class="btn btn-primary" onclick="article_delete();">글 삭제하기</button>
+		</div>
+
+		<div>
+			<div id="main">
+				
+			</div>
+		</div>
+
+			
+	</div>
 </body>
 </html>
 

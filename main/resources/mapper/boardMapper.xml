@@ -19,11 +19,17 @@
 			test_rest_board
 	</select>
 
-	<select id = "list" resultType="Article">
+	<select id = "list" resultMap="ArticleResultMap">
 		SELECT
-			*
+			id,
+			writer,
+			title,
+			content,
+			reg_date
 		FROM
 			test_rest_board
+		ORDER BY 
+			reg_date DESC
 	</select>
 
 	<select id = "detail" parameterType="int" resultMap="ArticleResultMap">
