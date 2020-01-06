@@ -76,5 +76,16 @@
 		WHERE
 			id = #{id}
 	</delete>
+
+	<select id="passwordCheck" parameterType="ArticlePassword" resultType="int">
+		SELECT 
+			id
+		FROM 
+			test_rest_board
+		WHERE
+			id = #{id} 
+		AND
+			password = #{password}
+	</select>
 	
 </mapper>

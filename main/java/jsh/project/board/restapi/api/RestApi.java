@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ch.qos.logback.classic.Logger;
 import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
+import jsh.project.board.restapi.dto.ArticlePassword;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 import jsh.project.board.restapi.service.BoardService;
 
@@ -65,6 +66,12 @@ public class RestApi{
     @DeleteMapping("/article/{id}")
     public ResponseEntity<HttpStatus> articleDelete(@PathVariable("id")int id){
         boardService.articleDelete(id);
+        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+    }
+    
+    @PostMapping(value="/article/password")
+    public ResponseEntity<HttpStatus> postMethodName(@RequestBody ArticlePassword dto) {
+        boardService.articlePasswordCheck(dto);
         return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }
     

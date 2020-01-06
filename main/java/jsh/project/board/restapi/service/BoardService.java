@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import jsh.project.board.restapi.dao.BoardMapper;
 import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
+import jsh.project.board.restapi.dto.ArticlePassword;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
 
 @Service
@@ -39,6 +40,10 @@ public class BoardService {
 	
 	public void articleDelete(int id) {
 		boardMapper.delete(id);
+	}
+
+	public void articlePasswordCheck(ArticlePassword dto){
+		boardMapper.passwordCheck(dto);
 	}
 	
 }

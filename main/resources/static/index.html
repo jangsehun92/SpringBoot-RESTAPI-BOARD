@@ -38,6 +38,11 @@ window.onload = function() {
 	});
 };
 
+function resize(obj){
+	obj.style.height = "1px";
+	obj.style.height = (12+obj.scrollHeight)+"px";
+}
+
 function total_count(){
 	$.ajax({
 		url:"/totalCount",
@@ -85,11 +90,6 @@ function article_list(){
 		}
 	});
 }
-function resize(obj){
-	obj.style.height = "1px";
-	obj.style.height = (12+obj.scrollHeight)+"px";
-}
-
 
 function article_detail(id){
 	$.ajax({
@@ -100,7 +100,6 @@ function article_detail(id){
 			$("#main").empty();
 			$("#main").append(
 				//단일 게시글 보기 기능에 맞춰 표현하기(수정 버튼, 삭제 버튼 표시)
-
 
 			);
 		},
@@ -188,6 +187,9 @@ function create_check_form(){
 }
 
 function article_update(id){
+	//비밀번호 확인
+
+	//비밀번호 확인 후
 	$.ajax({
 		url:"/article/"+id,
 		type:"get",
@@ -255,6 +257,9 @@ function update_check_form(){
 }
 
 function article_delete(id){
+	//비밀번호 확인
+
+	//비밀번호 확인 후
 	$.ajax({
 			url:"/article/"+id,
 			type:"delete",
@@ -270,7 +275,35 @@ function article_delete(id){
 
 //비밀번호 확인 
 function passwordCheck(){
+	var password = $("#articlePassword").val().replace(/\s|/gi,'');
+	var result = false;
+
+	var articlePassword = {
+		id : id,
+		password : password,
+	}
 	
+	if(password == ""){
+		alert("password를 입력해주세요.");
+		return result;
+	}
+	
+	$.ajax({
+		url:"/article/password",
+		type:"post",
+		contentType : "application/json; charset=UTF-8",
+		async: false,
+		dataType : "text",
+		data: JSON.stringify(articlePassword),
+		success:function(data){
+			result = true;
+		},
+		error:function(request,status,error){
+			alert("비밀번호가 다릅니다.");
+		}
+	});
+	
+	return result;
 }
 
 </script>
