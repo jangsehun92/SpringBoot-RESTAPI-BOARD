@@ -2,7 +2,7 @@
 <html>
 <meta charset="UTF-8">
 <head>
-	<title>Index</title>
+	<title>board</title>
 </head>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
@@ -26,105 +26,12 @@ jQuery.fn.serializeObject = function() {
 }
 
 window.onload = function() {
-	$.ajax({
-		url:"/totalCount",
-		type:"get",
-		success:function(data){
-			$("#main").append("<span>전체 게시글 수 : "+data+" 개</span>");
-		},
-		error:function(request,status,error){
-			alert("전체게시글 수 가져오기 실패");
-		}
-	});
+	article_list(1);
 };
-
-function page(page){
-	$("#mapn").empty();
-	$("#pagination").empty();
-	$.ajax({
-		url:"/articles?page="+page,
-		type:"get",
-		contentType : "application/json; charset=UTF-8",
-		dataType : "json", 
-		
-		success:function(data){
-			if(data.articleList[0] != null){
-				for(var i in data.articleList){
-					$("#boardBody").append(
-						"<tr>"+
-							"<td>"+data.articleList[i].id+"</td>"+
-							"<td><a href='/article/"+data.articleList[i].id+"'>"+data.articleList[i].title+"</a></td>"+
-							"<td align='right'>"+data.articleList[i].writer+"</td>"+
-							"<td align='right'>"+uxin_timestamp(data.articleList[i].regDate)+"</td>"+
-						"</tr>"
-					);
-				}
-				
-				console.log("pagination",data.pagination);
-				
-				if(data.startPage > 1){
-					$("#pagination").append("<li class=''><a href='#' onclick='page(1)' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
-				}else{
-					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
-				}
-				
-				if(data.page > 1){
-					$("#pagination").append("<li class=''><a href='#' onclick='page("+(data.page-1)+")' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
-				}else{
-					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
-				}
-				
-				for(var iCount = data.startPage; iCount <= data.endPage; iCount++) {
-					if (iCount == data.page) {
-				       $("#pagination").append("<li class='active'><a href='#'>"+iCount+"<span class='sr-only'></span></a></li>");
-				    } else {
-				    	$("#pagination").append("<li class=''><a href='#' onclick='page("+iCount+")'>" + iCount + "<span class='sr-only'></span></a></li>");
-				    }
-				}
-				
-				if(data.page < data.totalPage){
-					$("#pagination").append("<li class=''><a a href='#' onclick='page("+(data.page+1)+")' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
-				}else{
-					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
-				}
-				
-				if(data.endPage < data.totalPage){
-					$("#pagination").append("<li class=''><a href='#' onclick='page("+data.totalPage+")' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
-				}else{
-					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
-				}
-
-			}else{
-				$("#boardTable").append(
-					"<tr>"+
-						"<td colspan='4' align='center'>등록된 게시글이 없습니다.</td>"+
-					"</tr>"
-				);
-			}
-		},
-		error:function(request,status,error){
-			alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-		}
-	});
-}
 
 function resize(obj){
 	obj.style.height = "1px";
 	obj.style.height = (12+obj.scrollHeight)+"px";
-}
-
-function btn_total_count(){
-	$.ajax({
-		url:"/totalCount",
-		type:"get",
-		success:function(data){
-			$("#main").empty();
-			$("#main").append("<span>전체 게시글 수 : "+data+" 개</span>");
-		},
-		error:function(request,status,error){
-			alert("전체게시글 수 가져오기 실패");
-		}
-	});
 }
 
 function article_list(page){
@@ -157,6 +64,9 @@ function article_list(page){
 						"</tr>";
 			}
 			html += "</table>"+
+					"<div style='float: right'>"+
+						"<button class='btn btn-primary' onclick='btn_create();'>새 글쓰기</a>"+
+					"</div>"+
 					"<div>"+
 						"<nav aria-label='...' style='text-align: center;'>"+
 							"<ul class='pagination' id='pagination'>"+
@@ -247,6 +157,9 @@ function article_detail(id){
 						"</li>"+
 					"</ul>"+
 						"<div class='row' style='margin-left: 0px; margin-right: 0px'>"+
+							"<div style='float: left'>"+
+								"<input type='button' class='btn btn-primary' value='목록' onclick='article_list(1);''>"+
+							"</div>"+
 							"<div style='float: right'>"+
 								"<div style='float: right'>"+
 									"<div style='float: left'>"+
@@ -259,7 +172,7 @@ function article_detail(id){
 									"</div>"+
 									
 									"<div style='float: left'>"+
-										"<button class = 'btn btn-primary' onclick='btn_dite("+data.id+");'>삭제</button>"+
+										"<button class = 'btn btn-primary' onclick='btn_delete("+data.id+");'>삭제</button>"+
 									"</div>"+
 									
 								"</div>"+
@@ -295,7 +208,12 @@ function btn_create(){
 						"</tr>"+
 					"</table>"+
 				"</form>"+
-				"<input type='button' class='btn btn-primary' value='완료' onclick='return create_check_form();''>";
+				"<div >"+
+					"<input type='button' class='btn btn-primary' value='취소' onclick='article_list(1);''>"+
+					"<div div style='float: right'>"+
+						"<input type='button' class='btn btn-primary' value='완료' onclick='return create_check_form();''>"+
+					"</div>"
+				"</div>";
 	makeHtml(html);
 }
 
@@ -341,9 +259,9 @@ function create_check_form(){
 		url:"/articles",
 		type:"post",
 		contentType : "application/json; charset=UTF-8",
-		dataType : "text",
 		data: JSON.stringify(articleCreateRequest),
-		success:function(data){
+		success:function(data,xhr){
+			alert(data, xhr.status);
 			alert("글생성 성공!");
 			result = true;
 		},
@@ -352,7 +270,7 @@ function create_check_form(){
 		},
 		complete:function(){
 			if(result){
-				btn_article_list();
+				article_list(1);
 			}
 		}
 	});
@@ -383,7 +301,13 @@ function btn_update(id){
 								"</tr>"+
 							"</table>"+
 						"</form>"+
-						"<input type='button' class='btn btn-primary' value='완료' onclick='return update_check_form("+data.id+");''>";
+						"<div >"+
+							"<input type='button' class='btn btn-primary' value='취소' onclick='article_detail("+data.id+");''>"+
+							"<div div style='float: right'>"+
+								"<input type='button' class='btn btn-primary' value='완료' onclick='return update_check_form("+data.id+");''>";
+							"</div>"
+						"</div>"
+						
 			},
 			error:function(request,status,error){
 				alert("단일 게시글 불러오기 실패");
@@ -441,13 +365,13 @@ function update_check_form(id){
 	});
 }
 
-function btn_dite(id){
+function btn_delete(id){
 	//비밀번호 확인
 	if(passwordCheck(id)){
 		//비밀번호 확인 후
 		$.ajax({
 			url:"/article/"+id,
-			type:"dite",
+			type:"delete",
 			success:function(data){
 				alert("삭제 되었습니다.");
 			},
@@ -455,7 +379,7 @@ function btn_dite(id){
 				alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
 			}
 		});
-		btn_article_list();
+		article_list(1);
 	}
 	
 }
@@ -499,14 +423,9 @@ function makeHtml(html){
 </script>
 
 <body>
-	
-
 	<div class="container" >
-		<div>
-			<h1>TEST PAGE</h1>
-			<button class="btn btn-primary" onclick="btn_total_count();">전체 게시글 수</button>
-			<button class="btn btn-primary" onclick="article_list(1);">전체 게시글 가져오기</button>
-			<button class="btn btn-primary" onclick="btn_create();">글 작성하기</button>
+		<div style="text-align: center;">
+			<h1>게시판</h1>
 		</div>
 
 		<div>
@@ -514,8 +433,6 @@ function makeHtml(html){
 				
 			</div>
 		</div>
-
-			
 	</div>
 </body>
 </html>

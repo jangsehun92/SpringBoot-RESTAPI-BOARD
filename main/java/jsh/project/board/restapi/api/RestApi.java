@@ -32,13 +32,6 @@ public class RestApi{
         this.boardService = boardService;
     }
 
-    @GetMapping("/totalCount")
-    public ResponseEntity<Integer> test(){
-        logger.info("GET /totalCount");
-        System.out.println(boardService.totalCount());
-        return new ResponseEntity<Integer>(boardService.totalCount(),HttpStatus.OK);
-    }
-
     @GetMapping("/article/{id}")
     public ResponseEntity<Article> detail(@PathVariable("id")int id){
         logger.info("GET /article/"+id);
