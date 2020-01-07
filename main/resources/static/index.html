@@ -38,12 +38,82 @@ window.onload = function() {
 	});
 };
 
+function page(page){
+	$("#mapn").empty();
+	$("#pagination").empty();
+	$.ajax({
+		url:"/articles?page="+page,
+		type:"get",
+		contentType : "application/json; charset=UTF-8",
+		dataType : "json", 
+		
+		success:function(data){
+			if(data.articleList[0] != null){
+				for(var i in data.articleList){
+					$("#boardBody").append(
+						"<tr>"+
+							"<td>"+data.articleList[i].id+"</td>"+
+							"<td><a href='/article/"+data.articleList[i].id+"'>"+data.articleList[i].title+"</a></td>"+
+							"<td align='right'>"+data.articleList[i].writer+"</td>"+
+							"<td align='right'>"+uxin_timestamp(data.articleList[i].regDate)+"</td>"+
+						"</tr>"
+					);
+				}
+				
+				console.log("pagination",data.pagination);
+				
+				if(data.startPage > 1){
+					$("#pagination").append("<li class=''><a href='#' onclick='page(1)' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+				}else{
+					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+				}
+				
+				if(data.page > 1){
+					$("#pagination").append("<li class=''><a href='#' onclick='page("+(data.page-1)+")' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
+				}else{
+					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
+				}
+				
+				for(var iCount = data.startPage; iCount <= data.endPage; iCount++) {
+					if (iCount == data.page) {
+				       $("#pagination").append("<li class='active'><a href='#'>"+iCount+"<span class='sr-only'></span></a></li>");
+				    } else {
+				    	$("#pagination").append("<li class=''><a href='#' onclick='page("+iCount+")'>" + iCount + "<span class='sr-only'></span></a></li>");
+				    }
+				}
+				
+				if(data.page < data.totalPage){
+					$("#pagination").append("<li class=''><a a href='#' onclick='page("+(data.page+1)+")' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
+				}else{
+					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
+				}
+				
+				if(data.endPage < data.totalPage){
+					$("#pagination").append("<li class=''><a href='#' onclick='page("+data.totalPage+")' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+				}else{
+					$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+				}
+
+			}else{
+				$("#boardTable").append(
+					"<tr>"+
+						"<td colspan='4' align='center'>등록된 게시글이 없습니다.</td>"+
+					"</tr>"
+				);
+			}
+		},
+		error:function(request,status,error){
+			alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+		}
+	});
+}
+
 function resize(obj){
 	obj.style.height = "1px";
 	obj.style.height = (12+obj.scrollHeight)+"px";
 }
 
-function total_count(){
+function btn_total_count(){
 	$.ajax({
 		url:"/totalCount",
 		type:"get",
@@ -57,85 +127,181 @@ function total_count(){
 	});
 }
 
-function article_list(){
+function article_list(page){
+	var result = false;
+	var html = "";
+	var pagination = "";
 	$.ajax({
-		url:"/articles",
+		url:"/articles?page="+page,
 		type:"get",
-		dataType: "JSON",
+		contentType : "application/json; charset=UTF-8",
+		dataType : "json", 
 		success:function(data){
-			$("#main").empty();
-			$("#main").append(
-				"<table class='table table-hover' id='articleTable'>"+
-					"<thead>"+
-						"<tr>"+
-							"<td class='col-md-1'><b>번호</b></td>"+
-							"<td class='col-md-5'><b>제목</b></td>"+
-							"<td class='col-md-2' align='right'><b>작성자</b></td>"+
-							"<td class='col-md-2' align='right'><b>작성날짜</b></td>"+
-						"</tr>"+
-					"</thead>");
-			$.each(data, function(index, value) {
-				$("#articleTable").append(
-					"<tr>"+
-						"<td>"+value.id+"</td>"+
-						"<td><a href='article/"+value.id+"' onclick='return article_detail("+value.id+")'>"+value.title+"</a>"+
-						"<td align='right'>"+value.writer+"</td>"+
-						"<td align='right'>"+value.regDate+"</td>"+
-					"</tr>"+
-				"</table>");
-			});
+			result = true;
+			pagination = data.pagination;
+			html = "<table class='table table-hover' id='articleTable'>"+
+						"<thead>"+
+							"<tr>"+
+								"<td class='col-md-1'><b>번호</b></td>"+
+								"<td class='col-md-5'><b>제목</b></td>"+
+								"<td class='col-md-2' align='right'><b>작성자</b></td>"+
+								"<td class='col-md-2' align='right'><b>작성날짜</b></td>"+
+							"</tr>"+
+						"</thead>";
+			for(var i in data.articleList){
+				html += "<tr>"+
+							"<td>"+data.articleList[i].id+"</td>"+
+							"<td><a href='article/"+data.articleList[i].id+"' onclick='return article_detail("+data.articleList[i].id+")'>"+data.articleList[i].title+"</a>"+
+							"<td align='right'>"+data.articleList[i].writer+"</td>"+
+							"<td align='right'>"+data.articleList[i].regDate+"</td>"+
+						"</tr>";
+			}
+			html += "</table>"+
+					"<div>"+
+						"<nav aria-label='...' style='text-align: center;'>"+
+							"<ul class='pagination' id='pagination'>"+
+							"</ul>"+
+						"</nav>"+
+					"</div>";
 		},
 		error:function(request,status,error){
 			alert("전체 게시글 불러오기 실패");
-		}
-	});
-}
-
-function article_detail(id){
-	$.ajax({
-		url:"/article/"+id,
-		type:"get",
-		dataType: "JSON",
-		success:function(data){
-			$("#main").empty();
-			$("#main").append(
-				//단일 게시글 보기 기능에 맞춰 표현하기(수정 버튼, 삭제 버튼 표시)
-
-			);
 		},
-		error:function(request,status,error){
-			alert("단일 게시글 불러오기 실패");
+		complete:function(){
+			if(result){
+				makeHtml(html);
+				makePagination(pagination);
+			}
 		}
 	});
 	return false;
 }
 
-function article_create(){
-	$("#main").empty();
-	$("#main").append(
-		"<form name = 'articleCreateForm' id = 'articleCreateForm'>"+
-			"<table class='table'>"+
-				"<tr>"+
-					"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12'></td>"+
-				"</tr>"+
-				"<tr>"+
-					"<td><input id='password' name='password' type='password' class='form-control' placeholder='비밀번호' maxlength='64'></td>"+
-				"</tr>"+
-				"<tr>"+
-					"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50'></td>"+
-				"</tr>"+
-				"<tr>"+
-					"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'></textarea>"+
-				"</tr>"+
-			"</table>"+
-		"</form>"+
-		"<input type='button' class='btn btn-primary' value='완료' onclick='return create_check_form();''>"
-	);
+function makePagination(paginaton){
+	var startPage = paginaton.startPage;
+	var endPage = paginaton.endPage;
+	var page = paginaton.page;
+	var totalPage = paginaton.totalPage;
 
+	if(startPage > 1){
+		$("#pagination").append("<li class=''><a href='/articles?page=1' onclick='return article_list(1)' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+	}else{
+		$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+	}
+				
+	if(page > 1){
+		$("#pagination").append("<li class=''><a href='#' onclick='return article_list("+(page-1)+")' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
+	}else{
+		$("#pagination").append("<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&lang;</span></a></li>");
+	}
+	
+	for(var iCount = startPage; iCount <= endPage; iCount++) {
+		if (iCount == page) {
+		      $("#pagination").append("<li class='active'><a href='#'>"+iCount+"<span class='sr-only'></span></a></li>");
+	    } else {
+	    	$("#pagination").append("<li class=''><a href='/articles?page="+iCount+"' onclick='return article_list("+iCount+")'>" + iCount + "<span class='sr-only'></span></a></li>");
+	    }
+	}
+			
+	if(page < totalPage){
+		$("#pagination").append("<li class=''><a a href='/articles?page="+(page+1)+"' onclick='return article_list("+(page+1)+")' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
+	}else{
+		$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&rang;</span></a></li>");
+	}
+				
+	if(endPage < totalPage){
+		$("#pagination").append("<li class=''><a href='/articles?page="+totalPage+"' onclick='return article_list("+totalPage+")' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+	}else{
+		$("#pagination").append("<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+	}
+}
+
+
+function article_detail(id){
+	var result = false;
+	var html = "";
+	$.ajax({
+		url:"/article/"+id,
+		type:"get",
+		dataType: "JSON",
+		success:function(data){
+			result = true;
+			html = "<ul class='list-group'>"+
+						"<li class='list-group-item'>"+
+							"<div class='title'>"+
+								"<h3>"+data.title+"</h3>"+
+							"</div>"+
+							"<div class='row'>"+
+								"<div class='col-md-4' style='float: left'>"+
+									"<span>작성자 : "+data.writer+"</span>"+
+								"</div>"+
+								"<div class='col-md-2' style='float: right'>"+
+									"<span>작성날짜 : "+data.regDate+"</span>"+
+								"</div>"+
+							"</div>"+
+						"</li>"+
+						"<li class='list-group-item'>"+
+							"<div>"+
+								"<div id='board_content' style='white-space : pre-wrap;height: 100%'>"+data.content+"</div>"+
+							"</div>"+
+						"</li>"+
+					"</ul>"+
+						"<div class='row' style='margin-left: 0px; margin-right: 0px'>"+
+							"<div style='float: right'>"+
+								"<div style='float: right'>"+
+									"<div style='float: left'>"+
+										"<form>"+
+											"<input type='password' class='form-control' id='articlePassword' placeholder='password 입력'>"+
+										"</form>"+
+									"</div>"+
+									"<div style='float: left'>"+
+										"<button class = 'btn btn-primary' onclick='btn_update("+data.id+");'>수정</button>"+
+									"</div>"+
+									
+									"<div style='float: left'>"+
+										"<button class = 'btn btn-primary' onclick='btn_dite("+data.id+");'>삭제</button>"+
+									"</div>"+
+									
+								"</div>"+
+							"</div>"+
+						"</div>";
+		},
+		error:function(request,status,error){
+			alert("단일 게시글 불러오기 실패");
+		},
+		complete:function(){
+			if(result){
+				makeHtml(html);
+			}
+		}
+	});
+	return false;
+}
+
+function btn_create(){
+	var html = "<form name = 'articleCreateForm' id = 'articleCreateForm'>"+
+					"<table class='table'>"+
+						"<tr>"+
+							"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><input id='password' name='password' type='password' class='form-control' placeholder='비밀번호' maxlength='64'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50'></td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'></textarea>"+
+						"</tr>"+
+					"</table>"+
+				"</form>"+
+				"<input type='button' class='btn btn-primary' value='완료' onclick='return create_check_form();''>";
+	makeHtml(html);
 }
 
 function create_check_form(){
-	//공백 제거 후 내용 확인
+	var result = false;
+	//공백 제거 후 필수 내용 확인
 	var inputForm_writer = $("#writer").val().replace(/\s|/gi,'');
 	var inputForm_password = $("#password").val().replace(/\s|/gi,'');
 	var inputForm_title = $("#title").val().replace(/\s|/gi,'');
@@ -168,7 +334,7 @@ function create_check_form(){
 		$("#content").focus();
 		return false;
 	}
-	
+
 	var articleCreateRequest = $("form[name=articleCreateForm]").serializeObject();
 	
 	$.ajax({
@@ -179,49 +345,62 @@ function create_check_form(){
 		data: JSON.stringify(articleCreateRequest),
 		success:function(data){
 			alert("글생성 성공!");
+			result = true;
 		},
 		error:function(request,status,error){
 			alert("글쓰기 실패");
-		}
-	});
-}
-
-function article_update(id){
-	//비밀번호 확인
-
-	//비밀번호 확인 후
-	$.ajax({
-		url:"/article/"+id,
-		type:"get",
-		dataType: "JSON",
-		success:function(data){
-			$("#main").empty();
-			$("#main").append(
-				"<form name = 'articleUpdateForm' id = 'articleUpdateForm'>"+
-					"<table class='table'>"+
-						"<tr>"+
-							"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12' value="+data.writer+" readonly='readonly'></td>"+
-						"</tr>"+
-						"<tr>"+
-							"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50' value="+data.title+"></td>"+
-						"</tr>"+
-						"<tr>"+
-							"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'>"+data.content+"</textarea>"+
-						"</tr>"+
-					"</table>"+
-				"</form>"+
-				"<input type='button' class='btn btn-primary' value='완료' onclick='return update_check_form();''>"
-			);
 		},
-		error:function(request,status,error){
-			alert("단일 게시글 불러오기 실패");
+		complete:function(){
+			if(result){
+				btn_article_list();
+			}
 		}
 	});
+}
+
+function btn_update(id){
+	var result = false;
+	var html = "";
+	//비밀번호 확인
+	if(passwordCheck(id)){
+	//비밀번호 확인 후
+		$.ajax({
+			url:"/article/"+id,
+			type:"get",
+			dataType: "JSON",
+			success:function(data){
+				result = true;
+				html = "<form name = 'articleUpdateForm' id = 'articleUpdateForm'>"+
+							"<table class='table'>"+
+								"<tr>"+
+									"<td><input id='writer' name='writer' type='text' class='form-control' placeholder='작성자' maxlength='12' value="+data.writer+" readonly='readonly'></td>"+
+								"</tr>"+
+								"<tr>"+
+									"<td><input id='title' name='title' type='text' class='form-control' placeholder='제목' maxlength='50' value="+data.title+"></td>"+
+								"</tr>"+
+								"<tr>"+
+									"<td><textarea id='content' name='content' class='form-control' placeholder='내용' onkeydown='resize(this)'>"+data.content+"</textarea>"+
+								"</tr>"+
+							"</table>"+
+						"</form>"+
+						"<input type='button' class='btn btn-primary' value='완료' onclick='return update_check_form("+data.id+");''>";
+			},
+			error:function(request,status,error){
+				alert("단일 게시글 불러오기 실패");
+			},
+			complete:function(){
+				if(result){
+					makeHtml(html);
+				}
+			}
+		});
+	}
 
 }
 
-function update_check_form(){
-	//공백 제거 후 내용 확인
+function update_check_form(id){
+	var result = false;
+	//공백 제거 후 필수 내용 확인
 	var inputForm_title = $("#title").val().replace(/\s|/gi,'');
 	var inputForm_content = $("#content").val().replace(/\s|/gi,'');
 	
@@ -249,20 +428,26 @@ function update_check_form(){
 		data: JSON.stringify(articleUpdateRequest),
 		success:function(data){
 			alert("글수정 성공!");
+			result = true;
 		},
 		error:function(request,status,error){
 			alert("글수정 실패");
+		},
+		complete:function(){
+			if(result){
+				article_detail(id);
+			}
 		}
 	});
 }
 
-function article_delete(id){
+function btn_dite(id){
 	//비밀번호 확인
-
-	//비밀번호 확인 후
-	$.ajax({
+	if(passwordCheck(id)){
+		//비밀번호 확인 후
+		$.ajax({
 			url:"/article/"+id,
-			type:"delete",
+			type:"dite",
 			success:function(data){
 				alert("삭제 되었습니다.");
 			},
@@ -270,11 +455,12 @@ function article_delete(id){
 				alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
 			}
 		});
-	article_detail(id);
+		btn_article_list();
+	}
+	
 }
 
-//비밀번호 확인 
-function passwordCheck(){
+function passwordCheck(id){
 	var password = $("#articlePassword").val().replace(/\s|/gi,'');
 	var result = false;
 
@@ -306,6 +492,10 @@ function passwordCheck(){
 	return result;
 }
 
+function makeHtml(html){
+	$("#main").empty();
+	$("#main").append(html);
+}
 </script>
 
 <body>
@@ -314,20 +504,9 @@ function passwordCheck(){
 	<div class="container" >
 		<div>
 			<h1>TEST PAGE</h1>
-			<!--
-				1. totalCount 호출
-				2. ArticleList 호출
-				3. ArticleDetail 호출
-				4. CREATE, UPDATE 호출
-				5. DELETE 호출
-			-->
-			<button class="btn btn-primary" onclick="total_count();">전체 게시글 수</button>
-			<button class="btn btn-primary" onclick="article_list();">전체 게시글 가져오기</button>
-			<button class="btn btn-primary" onclick="article_create();">글 작성하기</button>
-			<!-- 
-				<button class="btn btn-primary" onclick="article_update();">글 수정하기</button>
-				<button class="btn btn-primary" onclick="article_delete();">글 삭제하기</button> 
-			-->
+			<button class="btn btn-primary" onclick="btn_total_count();">전체 게시글 수</button>
+			<button class="btn btn-primary" onclick="article_list(1);">전체 게시글 가져오기</button>
+			<button class="btn btn-primary" onclick="btn_create();">글 작성하기</button>
 		</div>
 
 		<div>

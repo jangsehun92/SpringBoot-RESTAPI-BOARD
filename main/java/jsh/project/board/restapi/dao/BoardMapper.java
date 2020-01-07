@@ -1,6 +1,7 @@
 package jsh.project.board.restapi.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,7 +15,7 @@ public interface BoardMapper {
 	
 	public int totalCount();
 	
-	public List<Article> list();
+	public List<Article> list(Map<String, Integer> paramMap);
 	
 	public Article detail(int id);
 

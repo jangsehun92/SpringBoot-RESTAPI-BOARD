@@ -1,6 +1,7 @@
 package jsh.project.board.restapi.service;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import jsh.project.board.restapi.dto.Article;
 import jsh.project.board.restapi.dto.ArticleCreateRequest;
 import jsh.project.board.restapi.dto.ArticlePassword;
 import jsh.project.board.restapi.dto.ArticleUpdateRequest;
+import jsh.project.util.Pagination;
 
 @Service
 public class BoardService {
@@ -21,8 +23,12 @@ public class BoardService {
 		return boardMapper.totalCount();
 	}
 	
-	public List<Article> list(){
-		return boardMapper.list();
+	public Map<String, Object> list(int page){
+		Map<String, Object> resultMap = new HashMap<>();
+		Pagination pagination = new Pagination(totalCount(), page);
+		resultMap.put("pagination",pagination); 
+		resultMap.put("articleList",boardMapper.list(pagination.scope()));
+		return resultMap;
 	}
 	
 	public Article detail(int id) {
