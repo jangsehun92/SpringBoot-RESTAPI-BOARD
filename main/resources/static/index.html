@@ -6,7 +6,6 @@
 </head>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 <script type="text/javascript">
 
 jQuery.fn.serializeObject = function() { 
@@ -43,7 +42,8 @@ function article_list(page){
 		type:"get",
 		contentType : "application/json; charset=UTF-8",
 		dataType : "json", 
-		success:function(data){
+		success:function(data,textStatus,jqXHR){
+			console.log("게시글 리스트 가져오기 : " + textStatus + " status : " +jqXHR.status);
 			result = true;
 			pagination = data.pagination;
 			html = "<table class='table table-hover' id='articleTable'>"+
@@ -55,12 +55,18 @@ function article_list(page){
 								"<td class='col-md-2' align='right'><b>작성날짜</b></td>"+
 							"</tr>"+
 						"</thead>";
-			for(var i in data.articleList){
+			if(Object.keys(data.articleList).length != 0){
+				for(var i in data.articleList){
+					html += "<tr>"+
+								"<td>"+data.articleList[i].id+"</td>"+
+								"<td><a href='article/"+data.articleList[i].id+"' onclick='return article_detail("+data.articleList[i].id+")'>"+data.articleList[i].title+"</a>"+
+								"<td align='right'>"+data.articleList[i].writer+"</td>"+
+								"<td align='right'>"+data.articleList[i].regDate+"</td>"+
+							"</tr>";
+				}
+			}else{
 				html += "<tr>"+
-							"<td>"+data.articleList[i].id+"</td>"+
-							"<td><a href='article/"+data.articleList[i].id+"' onclick='return article_detail("+data.articleList[i].id+")'>"+data.articleList[i].title+"</a>"+
-							"<td align='right'>"+data.articleList[i].writer+"</td>"+
-							"<td align='right'>"+data.articleList[i].regDate+"</td>"+
+							"<td colspan='4'>게시글이 없습니다.</td>"+
 						"</tr>";
 			}
 			html += "</table>"+
@@ -134,7 +140,8 @@ function article_detail(id){
 		url:"/article/"+id,
 		type:"get",
 		dataType: "JSON",
-		success:function(data){
+		success:function(data,textStatus,jqXHR){
+			console.log("게시글 가져오기 : " + textStatus + " status : " +jqXHR.status);
 			result = true;
 			html = "<ul class='list-group'>"+
 						"<li class='list-group-item'>"+
@@ -260,9 +267,8 @@ function create_check_form(){
 		type:"post",
 		contentType : "application/json; charset=UTF-8",
 		data: JSON.stringify(articleCreateRequest),
-		success:function(data,xhr){
-			alert(data, xhr.status);
-			alert("글생성 성공!");
+		success:function(data, textStatus, jqXHR){
+			console.log("글 생성 : " + textStatus + " status : " +jqXHR.status);
 			result = true;
 		},
 		error:function(request,status,error){
@@ -286,7 +292,8 @@ function btn_update(id){
 			url:"/article/"+id,
 			type:"get",
 			dataType: "JSON",
-			success:function(data){
+			success:function(data, textStatus, jqXHR){
+				console.log("게시글 가져오기 : " + textStatus + " status : " +jqXHR.status);
 				result = true;
 				html = "<form name = 'articleUpdateForm' id = 'articleUpdateForm'>"+
 							"<table class='table'>"+
@@ -350,8 +357,8 @@ function update_check_form(id){
 		contentType : "application/json; charset=UTF-8",
 		dataType : "text",
 		data: JSON.stringify(articleUpdateRequest),
-		success:function(data){
-			alert("글수정 성공!");
+		success:function(data, textStatus, jqXHR){
+			console.log("글 수정 : " + textStatus + " status : " +jqXHR.status);
 			result = true;
 		},
 		error:function(request,status,error){
@@ -372,8 +379,8 @@ function btn_delete(id){
 		$.ajax({
 			url:"/article/"+id,
 			type:"delete",
-			success:function(data){
-				alert("삭제 되었습니다.");
+			success:function(data, textStatus, jqXHR){
+				console.log("글 삭제 : " + textStatus + " status : " +jqXHR.status);
 			},
 			error:function(request,status,error){
 				alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -405,7 +412,8 @@ function passwordCheck(id){
 		async: false,
 		dataType : "text",
 		data: JSON.stringify(articlePassword),
-		success:function(data){
+		success:function(data, textStatus, jqXHR){
+			console.log("글 비밀번호 확인 : " + textStatus + " status : " +jqXHR.status);
 			result = true;
 		},
 		error:function(request,status,error){

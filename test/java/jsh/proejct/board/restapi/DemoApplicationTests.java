@@ -1,17 +1,17 @@
 package jsh.proejct.board.restapi;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import jsh.project.board.restapi.dao.BoardMapper;
-
-// @RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 class DemoApplicationTests {
 
-	@Autowired
-	private BoardMapper boardDao;
+	// @Autowired
+	// private BoardMapper boardMapper;
 
 	@Test
 	void contextLoads() {
@@ -19,7 +19,7 @@ class DemoApplicationTests {
 
 	@Test
 	void boardTest(){
-		System.out.println(boardDao.totalCount());
+		System.out.println("boardMapper.totalCount()");
 	}
 
 }
