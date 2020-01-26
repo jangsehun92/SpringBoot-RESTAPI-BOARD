@@ -4,7 +4,7 @@ Spring boot 를 이용하여 간단한 CRUD 게시판을 만든다.
 
 jsp를 사용하지 않고, 하나의 html을 사용하여 화면을 그리고
 
-ajax를 이용하여 서버에서 json데이터를 받아온다.
+ajax를 이용하여 서버에서 json데이터를 받아오고 javascript를 이용하여 화면을 그린다.
 
 ## 환경
 - Spring Boot 2.2.2
