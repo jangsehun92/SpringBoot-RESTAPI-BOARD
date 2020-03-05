@@ -17,6 +17,7 @@ ajax를 이용하여 서버에서 json데이터를 받아오고 javascript를 �
 - index.html에서 javascript로 화면을 그린다.
 - ajax를 이용하여 서버와 통신한다.
 - 게시판 CRUD
+- 게시글 비밀번호 확인을 통해 수정,삭제한다.
 - 페이징 처리
 
 
